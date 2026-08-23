@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radiografía deportiva — fútbol con datos</title>
+<meta name="description" content="PCA + k-means + Random Forest aplicado a fútbol: estilos de equipo, ranking dinámico y predicción de resultados. Predicción en vivo de Liga MX y La Liga, calculada en tu navegador.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.plot.ly/plotly-2.32.0.min.js" charset="utf-8"></script>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">radiografía<span>.futbol</span></div>
+    <nav class="tabs" id="mainNav">
+      <button data-panel="predict" class="active">Predictor en vivo</button>
+      <button data-panel="explore">Explorar equipos</button>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>PCA + k-means + Random Forest, aplicado a fútbol</h1>
+    <p class="lead">
+      Misma metodología de análisis de rendimiento que usamos primero en basquetball, portada a
+      fútbol con datos abiertos: ranking dinámico partido a partido, estilos de equipo encontrados
+      por el modelo (no definidos a mano), y predicción de resultados entrenada con separación
+      temporal real. El predictor de Liga MX y La Liga corre <b>enteramente en tu navegador</b> —
+      sin backend, sin servidor: los árboles del modelo se exportaron a JSON y se evalúan aquí mismo.
+    </p>
+    <div class="stat-strip" id="statStrip"></div>
+  </div>
+
+  <section class="panel active" id="panel-predict">
+    <div class="card">
+      <h2>Predicción de partidos</h2>
+      <p class="hint">Elige dos equipos de la temporada en curso — el modelo se entrenó con separación temporal (nunca ve la temporada actual) y calcula la predicción al instante, en tu navegador.</p>
+
+      <div class="league-toggle" id="liveLeagueToggle"></div>
+
+      <div class="row">
+        <div class="field">
+          <label>Local</label>
+          <select id="homeSelect"></select>
+        </div>
+        <div class="field">
+          <label>Visita</label>
+          <select id="awaySelect"></select>
+        </div>
+        <button class="primary" id="predictBtn">Predecir</button>
+      </div>
+
+      <div class="predict-result" id="predictResult"></div>
+
+      <div class="callout" id="liveCaveat"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-explore">
+    <div class="card">
+      <h2>Explorar competiciones</h2>
+      <p class="hint">Datos de StatsBomb Open Data (eventos), Liga MX (openfootball) y temporadas en curso — ranking dinámico, estructura PCA, estilos de equipo (k-means) y qué tan bien predijo el modelo la temporada más reciente.</p>
+      <div class="row">
+        <div class="field">
+          <label>Competición</label>
+          <select id="compSelect"></select>
+        </div>
+        <div class="field">
+          <label>Equipo</label>
+          <select id="teamSelect"></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Evolución en la tabla</h2>
+      <p class="hint"><span class="mono">rank_dynamic</span> = posición en la tabla justo ANTES de jugar ese partido (1 = líder), calculada solo con resultados previos.</p>
+      <div id="rankChart" class="chart"></div>
+    </div>
+
+    <div class="card">
+      <h2>PCA — estructura de rendimiento</h2>
+      <p class="hint">Cada punto es un partido de un equipo en la competición completa; el equipo elegido se resalta.</p>
+      <div id="pcaChart" class="chart"></div>
+    </div>
+
+    <div class="card">
+      <h2>Estilos de equipo (k-means, k=4)</h2>
+      <p class="hint">Agrupa cada partido-equipo por parecido estadístico — las etiquetas salen de las 2 variables con mayor z-score de cada cluster, no se definen a mano.</p>
+      <div class="table-scroll">
+        <table class="data" id="stylesTable"><thead><tr><th>Fecha</th><th>Rival</th><th>Resultado</th><th>Estilo</th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+
+    <div class="card" id="backtestCard">
+      <h2>Backtest del modelo predictivo</h2>
+      <p class="hint" id="backtestHint"></p>
+      <div class="metric-strip" id="backtestMetrics"></div>
+      <div class="table-scroll">
+        <table class="data" id="backtestTable"><thead><tr><th>Fecha</th><th>Local</th><th>Marcador</th><th>Visita</th><th>Predijo</th><th>Confianza</th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Metodología portada de un modelo de basquetball (PCA + k-means + Random Forest sobre rendimiento
+    de jugadores/equipos) a fútbol, con datos abiertos de StatsBomb, openfootball y fuentes públicas
+    de la temporada en curso. Siguiente paso: la misma metodología para la NBA.
+    <br>Código en <a href="#" id="repoLink">GitHub</a>.
+  </footer>
+</div>
+
+<script src="rf.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
