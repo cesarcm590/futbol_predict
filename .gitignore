@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+.claude/
+
+# Cache crudo de eventos StatsBomb (~11 GB) -- se reconstruye bajo demanda,
+# no cabe en un repo de git. Si un competition/season no esta cacheado al
+# desplegar, data_loader.py lo descarga de nuevo la primera vez que se pide.
+data_cache/events/
+
+.streamlit/secrets.toml

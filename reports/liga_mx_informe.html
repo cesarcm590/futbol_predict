@@ -1,0 +1,719 @@
+<meta charset="utf-8">
+<title>Radiografía de Liga MX</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --paper: #f1f3ed;
+    --surface: #ffffff;
+    --surface-2: #eaece3;
+    --ink: #12201a;
+    --ink-muted: #56635c;
+    --ink-faint: #869084;
+    --line: #d9dcd0;
+    --pitch: #17603f;
+    --pitch-strong: #0e4a30;
+    --pitch-soft: #e2ecE4;
+    --gold: #a5741f;
+    --gold-soft: #f2e6cc;
+    --win: #1f8a52;
+    --draw: #b8862c;
+    --loss: #ac4a3a;
+    --win-soft: #dcefe2;
+    --draw-soft: #f4e9d2;
+    --loss-soft: #f3ddd7;
+    --shadow: 0 1px 2px rgba(18,32,26,0.06), 0 8px 24px -12px rgba(18,32,26,0.18);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0c130f;
+      --surface: #121b15;
+      --surface-2: #182219;
+      --ink: #eef2ec;
+      --ink-muted: #9caa9f;
+      --ink-faint: #6c786f;
+      --line: #253830;
+      --pitch: #45a877;
+      --pitch-strong: #6cc498;
+      --pitch-soft: #16261d;
+      --gold: #d9ac53;
+      --gold-soft: #2a2114;
+      --win: #45a877;
+      --draw: #d9ac53;
+      --loss: #d17a68;
+      --win-soft: #16281f;
+      --draw-soft: #2a2114;
+      --loss-soft: #2b1a16;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #0c130f;
+    --surface: #121b15;
+    --surface-2: #182219;
+    --ink: #eef2ec;
+    --ink-muted: #9caa9f;
+    --ink-faint: #6c786f;
+    --line: #253830;
+    --pitch: #45a877;
+    --pitch-strong: #6cc498;
+    --pitch-soft: #16261d;
+    --gold: #d9ac53;
+    --gold-soft: #2a2114;
+    --win: #45a877;
+    --draw: #d9ac53;
+    --loss: #d17a68;
+    --win-soft: #16281f;
+    --draw-soft: #2a2114;
+    --loss-soft: #2b1a16;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--pitch); color: var(--surface); }
+
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+  h1, h2, h3, h4 { font-family: "Archivo", ui-sans-serif, sans-serif; text-wrap: balance; margin: 0; }
+
+  a { color: var(--pitch); }
+
+  /* ---------- Top nav ---------- */
+  .topnav {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; gap: 20px;
+    padding: 12px 32px;
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .topnav .brand { font-family: "Archivo"; font-weight: 700; color: var(--ink); letter-spacing: .01em; flex: none; }
+  .topnav .brand span { color: var(--pitch); }
+  .topnav nav { display: flex; gap: 18px; flex: none; }
+  .topnav nav a { color: var(--ink-muted); text-decoration: none; font-weight: 500; }
+  .topnav nav a:hover { color: var(--pitch); }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    padding: 76px 32px 48px;
+    max-width: 920px;
+    margin: 0 auto;
+  }
+  .hero .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: "IBM Plex Mono"; font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--pitch); background: var(--pitch-soft);
+    padding: 5px 12px; border-radius: 999px;
+    margin-bottom: 22px;
+  }
+  .hero .eyebrow::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--pitch); }
+  .hero h1 {
+    font-size: clamp(2.6rem, 5.5vw, 4rem);
+    font-weight: 900;
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+  }
+  .hero h1 em { font-style: normal; color: var(--pitch); }
+  .hero .subtitle {
+    margin-top: 18px;
+    max-width: 60ch;
+    font-size: 1.15rem;
+    color: var(--ink-muted);
+  }
+  .hero .meta {
+    margin-top: 28px;
+    display: flex; flex-wrap: wrap; gap: 8px 22px;
+    font-family: "IBM Plex Mono"; font-size: 13px; color: var(--ink-faint);
+  }
+
+  .statrow {
+    max-width: 920px; margin: 0 auto; padding: 0 32px 64px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .statrow .stat { background: var(--surface); padding: 22px 20px; }
+  .statrow .stat .n { font-family: "Archivo"; font-weight: 800; font-size: 2rem; color: var(--pitch-strong); }
+  .statrow .stat .l { margin-top: 4px; font-size: 12.5px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: .04em; }
+
+  /* ---------- Sections ---------- */
+  main { max-width: 920px; margin: 0 auto; padding: 0 32px 40px; }
+  section { padding: 56px 0; border-top: 1px solid var(--line); }
+  section:first-child { border-top: none; }
+
+  .section-head { display: flex; gap: 18px; align-items: baseline; margin-bottom: 28px; }
+  .section-head .num { font-family: "IBM Plex Mono"; font-size: 14px; color: var(--gold); font-weight: 600; flex: none; padding-top: 4px; }
+  .section-head h2 { font-size: 1.7rem; font-weight: 700; }
+  .section-head .kicker { display: block; font-family: "IBM Plex Mono"; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 6px; }
+
+  section > p, .prose p { max-width: 68ch; color: var(--ink); }
+  .lede { font-size: 1.08rem; color: var(--ink-muted); max-width: 66ch; }
+
+  .callout {
+    margin: 24px 0; padding: 18px 22px;
+    background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--pitch);
+    border-radius: 10px; box-shadow: var(--shadow);
+    max-width: 68ch;
+  }
+  .callout.gold { border-left-color: var(--gold); }
+  .callout p { margin: 0; }
+  .callout .k { font-family: "Archivo"; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--pitch); display: block; margin-bottom: 6px; }
+  .callout.gold .k { color: var(--gold); }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+    padding: 24px 26px; box-shadow: var(--shadow);
+  }
+
+  .grid2 { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 24px; align-items: start; }
+  @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+  th { font-family: "Archivo"; font-weight: 600; color: var(--ink-muted); font-size: 12.5px; text-transform: uppercase; letter-spacing: .03em; }
+  td.num, th.num { text-align: right; font-family: "IBM Plex Mono"; }
+  .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); box-shadow: var(--shadow); }
+  .table-wrap table { min-width: 480px; }
+  .table-wrap th, .table-wrap td { padding: 11px 16px; }
+
+  /* ---------- WDL stacked bar ---------- */
+  .wdl-bar { display: flex; height: 34px; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); }
+  .wdl-bar > div { display: flex; align-items: center; justify-content: center; font-family: "IBM Plex Mono"; font-size: 12.5px; font-weight: 600; color: var(--surface); }
+  .wdl-w { background: var(--win); }
+  .wdl-d { background: var(--draw); }
+  .wdl-l { background: var(--loss); }
+  .wdl-legend { display: flex; gap: 18px; margin-top: 10px; font-size: 12.5px; color: var(--ink-muted); }
+  .wdl-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .wdl-legend i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+
+  /* ---------- horizontal bars ---------- */
+  .hbars { display: flex; flex-direction: column; gap: 10px; }
+  .hbar-row { display: grid; grid-template-columns: 118px 1fr 48px; align-items: center; gap: 10px; font-size: 13.5px; }
+  .hbar-row .label { color: var(--ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hbar-track { height: 12px; background: var(--surface-2); border-radius: 6px; overflow: hidden; }
+  .hbar-fill { height: 100%; border-radius: 6px; background: var(--pitch); }
+  .hbar-row .val { font-family: "IBM Plex Mono"; text-align: right; color: var(--ink); }
+
+  /* ---------- variance bars ---------- */
+  .pc-bars { display: flex; align-items: flex-end; gap: 28px; height: 160px; padding: 0 8px; }
+  .pc-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+  .pc-bar { width: 100%; max-width: 64px; background: linear-gradient(180deg, var(--pitch), var(--pitch-strong)); border-radius: 8px 8px 3px 3px; position: relative; }
+  .pc-bar .pct { position: absolute; top: -22px; left: 0; right: 0; text-align: center; font-family: "IBM Plex Mono"; font-size: 13px; font-weight: 600; color: var(--ink); }
+  .pc-bar-col .lbl { margin-top: 10px; font-family: "Archivo"; font-weight: 700; font-size: 13px; }
+  .pc-bar-col .cum { margin-top: 2px; font-family: "IBM Plex Mono"; font-size: 11px; color: var(--ink-faint); }
+
+  /* ---------- diverging loadings ---------- */
+  .load-chart { display: flex; flex-direction: column; gap: 8px; }
+  .load-row { display: grid; grid-template-columns: 132px 1fr; align-items: center; gap: 10px; font-size: 13px; }
+  .load-row .label { color: var(--ink-muted); }
+  .load-track { position: relative; height: 16px; background: var(--surface-2); border-radius: 4px; }
+  .load-track .zero { position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--ink-faint); }
+  .load-track .fill { position: absolute; top: 0; bottom: 0; border-radius: 3px; }
+  .load-track .fill.pos { background: var(--pitch); left: 50%; }
+  .load-track .fill.neg { background: var(--loss); right: 50%; }
+  .load-track .fv { position: absolute; top: 100%; margin-top: 2px; font-family: "IBM Plex Mono"; font-size: 10.5px; color: var(--ink-faint); }
+
+  /* ---------- cluster cards ---------- */
+  .clusters { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  @media (max-width: 640px) { .clusters { grid-template-columns: 1fr; } }
+  .cluster-card { border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 18px 20px; box-shadow: var(--shadow); }
+  .cluster-card .tier { font-family: "IBM Plex Mono"; font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-faint); }
+  .cluster-card h4 { font-size: 1.05rem; margin-top: 4px; }
+  .cluster-card .n { font-family: "IBM Plex Mono"; font-size: 12.5px; color: var(--ink-muted); margin-top: 2px; }
+  .cluster-card .wdl-bar { margin-top: 14px; height: 24px; }
+
+  /* ---------- trajectory chart (Pumas UNAM) ---------- */
+  .traj { display: flex; align-items: flex-end; gap: 14px; height: 200px; margin-top: 8px; padding: 0 4px; }
+  .traj-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 4px; }
+  .traj-bars { display: flex; gap: 4px; align-items: flex-end; height: 150px; width: 100%; justify-content: center; }
+  .traj-bar { width: 14px; border-radius: 4px 4px 2px 2px; position: relative; }
+  .traj-bar.start { background: var(--ink-faint); }
+  .traj-bar.finish { background: var(--pitch); }
+  .traj-bar .rv { position: absolute; top: -18px; left: 0; right: 0; text-align: center; font-family: "IBM Plex Mono"; font-size: 10.5px; color: var(--ink-muted); }
+  .traj-col .season { margin-top: 8px; font-family: "IBM Plex Mono"; font-size: 10.5px; color: var(--ink-faint); text-align: center; }
+  .traj-legend { display: flex; gap: 18px; margin-top: 18px; font-size: 12.5px; color: var(--ink-muted); }
+  .traj-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .traj-legend i { width: 14px; height: 8px; border-radius: 2px; display: inline-block; }
+
+  /* ---------- model comparison ---------- */
+  .model-compare { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 720px) { .model-compare { grid-template-columns: 1fr; } }
+  .model-card { border: 1px solid var(--line); border-radius: 12px; padding: 20px; background: var(--surface); box-shadow: var(--shadow); }
+  .model-card.highlight { border-color: var(--pitch); box-shadow: 0 0 0 1px var(--pitch), var(--shadow); }
+  .model-card .name { font-family: "Archivo"; font-weight: 700; font-size: 1rem; }
+  .model-card .tag { font-family: "IBM Plex Mono"; font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: .05em; margin-top: 2px; display: block;}
+  .model-card .big { font-family: "Archivo"; font-weight: 800; font-size: 2.1rem; margin-top: 14px; color: var(--pitch-strong); }
+  .model-card .sub { font-size: 12.5px; color: var(--ink-muted); margin-top: 2px; }
+  .model-card ul { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+  .model-card li { display: flex; justify-content: space-between; border-top: 1px dashed var(--line); padding-top: 6px; }
+  .model-card li span:last-child { font-family: "IBM Plex Mono"; color: var(--ink); }
+
+  .badge { display: inline-block; font-family: "IBM Plex Mono"; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
+  .badge.H { background: var(--win-soft); color: var(--win); }
+  .badge.D { background: var(--draw-soft); color: var(--draw); }
+  .badge.A { background: var(--loss-soft); color: var(--loss); }
+
+  .conf-bar { display: inline-block; width: 60px; height: 6px; background: var(--surface-2); border-radius: 3px; overflow: hidden; vertical-align: middle; margin-right: 8px; }
+  .conf-fill { display: block; height: 100%; background: var(--gold); }
+
+  footer {
+    max-width: 920px; margin: 0 auto; padding: 40px 32px 90px;
+    color: var(--ink-faint); font-size: 12.5px; border-top: 1px solid var(--line);
+  }
+  footer p { max-width: 70ch; }
+
+  ol.steps { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 14px; max-width: 68ch; }
+  ol.steps li { display: flex; gap: 14px; }
+  ol.steps .idx { font-family: "IBM Plex Mono"; color: var(--gold); font-weight: 600; flex: none; width: 22px; }
+
+  code { font-family: "IBM Plex Mono"; background: var(--surface-2); padding: 1px 6px; border-radius: 4px; font-size: 0.9em; }
+</style>
+
+<div class="topnav">
+  <div class="brand">LIGA MX <span>· Radiografía</span></div>
+  <nav>
+    <a href="#alcance">Alcance</a>
+    <a href="#ranking">Ranking dinámico</a>
+    <a href="#pca">PCA</a>
+    <a href="#estilos">Estilos</a>
+    <a href="#prediccion">Predicción</a>
+    <a href="#limitaciones">Limitaciones</a>
+  </nav>
+</div>
+
+<div class="hero">
+  <span class="eyebrow">Informe ejecutivo</span>
+  <h1>Quince años de Liga MX,<br><em>leídos como datos.</em></h1>
+  <p class="subtitle">
+    Ranking dinámico, componentes principales, estilos de equipo y un modelo de predicción de
+    resultados construidos sobre 4,545 partidos de fase regular — desde el Apertura 2010 hasta el
+    Clausura 2025.
+  </p>
+  <div class="meta">
+    <span>Fuente: openfootball (dominio público)</span>
+    <span>·</span>
+    <span>28 equipos históricos</span>
+    <span>·</span>
+    <span>30 torneos cortos</span>
+  </div>
+</div>
+
+<div class="statrow">
+  <div class="stat"><div class="n mono">4,545</div><div class="l">Partidos analizados</div></div>
+  <div class="stat"><div class="n mono">28</div><div class="l">Equipos con historial</div></div>
+  <div class="stat"><div class="n mono">30</div><div class="l">Torneos Apertura / Clausura</div></div>
+  <div class="stat"><div class="n mono">15</div><div class="l">Años de cobertura</div></div>
+</div>
+
+<main>
+
+  <section id="resumen">
+    <div class="section-head">
+      <span class="num">01</span>
+      <div><span class="kicker">Resumen ejecutivo</span><h2>Qué dice el modelo, en tres ideas</h2></div>
+    </div>
+    <p class="lede">
+      Este informe documenta el análisis de rendimiento de equipos de Liga MX construido sobre la
+      misma metodología aplicada a las ligas europeas del proyecto (ranking dinámico, PCA, k-means
+      y un clasificador de resultados) — con una diferencia importante de origen de datos que
+      condiciona todo lo que sigue.
+    </p>
+    <div class="callout">
+      <span class="k">1 — Liga MX es una liga de parejos</span>
+      <p>
+        El 27.4% de los 4,545 partidos terminó en empate — más alto que la mayoría de las ligas
+        europeas del proyecto. La diferencia entre el mejor y el peor equipo, medida en variables
+        pre-partido, se explica en un 80% por un solo eje estadístico: qué tan bien parado está el
+        equipo en la tabla al momento de jugar.
+      </p>
+    </div>
+    <div class="callout gold">
+      <span class="k">2 — El modelo predictivo apenas le gana a "siempre gana el local"</span>
+      <p>
+        Con solo goles y ranking dinámico como variables (sin tiros, posesión ni pases — datos que
+        esta fuente no trae), el modelo de resultado (Local/Empate/Visita) queda por debajo de la
+        línea base ingenua en exactitud simple, pero la supera en exactitud balanceada y multiplica
+        por 2 la capacidad de detectar empates reales.
+      </p>
+    </div>
+    <div class="callout">
+      <span class="k">3 — El ranking dinámico sí capta algo real</span>
+      <p>
+        El caso de Pumas UNAM en sus últimos 8 torneos es ilustrativo: en 4 de 8 arranca entre los
+        primeros 9 lugares y termina desplomado fuera del top 14 — el patrón de "empieza bien, se
+        desinfla" que cualquier aficionado de Pumas reconocería — hasta el Apertura 2023, donde
+        arranca último del grupo (15º) y remonta hasta el 5º lugar. El modelo capta ambos patrones sin
+        conocer nada de fútbol de antemano.
+      </p>
+    </div>
+  </section>
+
+  <section id="alcance">
+    <div class="section-head">
+      <span class="num">02</span>
+      <div><span class="kicker">Metodología</span><h2>Alcance y fuente de datos</h2></div>
+    </div>
+    <p>
+      A diferencia de las ligas europeas del proyecto (StatsBomb Open Data, con eventos detallados
+      de cada partido), Liga MX se integró desde <strong>openfootball</strong>, un dataset de dominio
+      público que solo trae fecha, equipos y marcador. Esa diferencia de origen se propaga a cada
+      sección de este informe y se marca explícitamente donde aplica.
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Variable</th><th>Ligas StatsBomb</th><th>Liga MX (openfootball)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Resultado, fecha, equipos</td><td>Sí</td><td>Sí</td></tr>
+          <tr><td>Ranking dinámico (tabla previa al partido)</td><td>Sí</td><td>Sí</td></tr>
+          <tr><td>Forma reciente basada en goles</td><td>Sí</td><td>Sí</td></tr>
+          <tr><td>Tiros, xG, posesión, pases, duelos</td><td>Sí</td><td>No disponible</td></tr>
+          <tr><td>Heatmaps y PCA de jugador</td><td>Sí</td><td>No disponible</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:18px">
+      Se excluyeron las fases de liguilla (play-in, cuartos, semifinal, final) de cada torneo corto:
+      son un formato de eliminación directa con marcadores de ida-vuelta y penales que no encajan en
+      el esquema de tabla de posiciones. El análisis cubre exclusivamente la <strong>fase regular</strong>
+      de cada Apertura y Clausura — 153 partidos por torneo en la era de 17 equipos.
+    </p>
+  </section>
+
+  <section id="ranking">
+    <div class="section-head">
+      <span class="num">03</span>
+      <div><span class="kicker">Base estandarizada</span><h2>Ranking dinámico y distribución de resultados</h2></div>
+    </div>
+    <p>
+      Para cada partido se calculó la posición en la tabla, el porcentaje de victorias y la
+      diferencia de goles <strong>tal como estaban justo antes de ese partido</strong> — nunca con
+      información del propio partido ni de partidos futuros. Cada Apertura y Clausura arranca su
+      tabla desde cero, igual que en la competencia real.
+    </p>
+
+    <div class="grid2" style="margin-top:28px">
+      <div class="card">
+        <h4 style="font-size:1rem">Distribución de resultados (4,545 partidos)</h4>
+        <div class="wdl-bar" style="margin-top:16px">
+          <div class="wdl-w" style="width:36.3%">36.3%</div>
+          <div class="wdl-d" style="width:27.4%">27.4%</div>
+          <div class="wdl-l" style="width:36.3%">36.3%</div>
+        </div>
+        <div class="wdl-legend">
+          <span><i style="background:var(--win)"></i>Gana local</span>
+          <span><i style="background:var(--draw)"></i>Empate</span>
+          <span><i style="background:var(--loss)"></i>Gana visita</span>
+        </div>
+        <p style="margin-top:16px;font-size:13.5px;color:var(--ink-muted)">
+          Para referencia: en las ligas StatsBomb del proyecto (La Liga, Bundesliga, Premier League)
+          la tasa de empates ronda 22&ndash;25%. Liga MX corre consistentemente más alto.
+        </p>
+      </div>
+
+      <div class="card">
+        <h4 style="font-size:1rem">Fortaleza histórica por equipo</h4>
+        <p style="font-size:12.5px;color:var(--ink-muted);margin-top:4px">% de victoria promedio en la tabla dinámica, todas las temporadas</p>
+        <div class="hbars" style="margin-top:16px">
+          <div class="hbar-row"><span class="label">CF América</span><div class="hbar-track"><div class="hbar-fill" style="width:100%;background:var(--gold)"></div></div><span class="val">51.9%</span></div>
+          <div class="hbar-row"><span class="label">CF Monterrey</span><div class="hbar-track"><div class="hbar-fill" style="width:89%"></div></div><span class="val">46.2%</span></div>
+          <div class="hbar-row"><span class="label">UANL Tigres</span><div class="hbar-track"><div class="hbar-fill" style="width:88%"></div></div><span class="val">45.7%</span></div>
+          <div class="hbar-row"><span class="label">Dep. Toluca</span><div class="hbar-track"><div class="hbar-fill" style="width:85%"></div></div><span class="val">44.2%</span></div>
+          <div class="hbar-row"><span class="label">Cruz Azul</span><div class="hbar-track"><div class="hbar-fill" style="width:81%"></div></div><span class="val">42.2%</span></div>
+        </div>
+        <p style="margin-top:14px;font-size:12.5px;color:var(--ink-faint)">Más bajo del período: Dorados de Sinaloa (15.9%), Mazatlán FC (20.3%).</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <h4 style="font-size:1rem">Caso de estudio — Pumas UNAM, últimos 8 torneos</h4>
+      <p style="font-size:13.5px;color:var(--ink-muted);margin-top:4px;max-width:64ch">
+        Posición en la tabla al arrancar el torneo (gris) contra posición antes del último partido
+        jugado (verde). Menor número = mejor posición.
+      </p>
+      <div class="traj">
+        <div class="traj-col"><div class="traj-bars">
+          <div class="traj-bar start" style="height:65%"><span class="rv">7</span></div>
+          <div class="traj-bar finish" style="height:18%"><span class="rv">15</span></div>
+        </div><div class="season">Ap. 21</div></div>
+        <div class="traj-col"><div class="traj-bars">
+          <div class="traj-bar start" style="height:53%"><span class="rv">9</span></div>
+          <div class="traj-bar finish" style="height:24%"><span class="rv">14</span></div>
+        </div><div class="season">Cl. 22</div></div>
+        <div class="traj-col"><div class="traj-bars">
+          <div class="traj-bar start" style="height:59%"><span class="rv">8</span></div>
+          <div class="traj-bar finish" style="height:12%"><span class="rv">16</span></div>
+        </div><div class="season">Ap. 22</div></div>
+        <div class="traj-col"><div class="traj-bars">
+          <div class="traj-bar start" style="height:76%"><span class="rv">5</span></div>
+          <div class="traj-bar finish" style="height:24%"><span class="rv">14</span></div>
+        </div><div class="season">Cl. 23</div></div>
+        <div class="traj-col"><div class="traj-bars">
+          <div class="traj-bar start" style="height:18%"><span class="rv">15</span></div>
+          <div class="traj-bar finish" style="height:76%"><span class="rv">5</span></div>
+        </div><div class="season">Ap. 23</div></div>
+        <div class="traj-col"><div class="traj-bars">
+          <div class="traj-bar start" style="height:53%"><span class="rv">9</span></div>
+          <div class="traj-bar finish" style="height:53%"><span class="rv">9</span></div>
+        </div><div class="season">Cl. 24</div></div>
+        <div class="traj-col"><div class="traj-bars">
+          <div class="traj-bar start" style="height:47%"><span class="rv">10</span></div>
+          <div class="traj-bar finish" style="height:82%"><span class="rv">4</span></div>
+        </div><div class="season">Ap. 24</div></div>
+        <div class="traj-col"><div class="traj-bars">
+          <div class="traj-bar start" style="height:53%"><span class="rv">9</span></div>
+          <div class="traj-bar finish" style="height:47%"><span class="rv">10</span></div>
+        </div><div class="season">Cl. 25</div></div>
+      </div>
+      <div class="traj-legend">
+        <span><i style="background:var(--ink-faint)"></i>Posición al arrancar el torneo</span>
+        <span><i style="background:var(--pitch)"></i>Posición antes del último partido</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="pca">
+    <div class="section-head">
+      <span class="num">04</span>
+      <div><span class="kicker">Reducción de dimensión</span><h2>Análisis de componentes principales</h2></div>
+    </div>
+    <p>
+      Con solo 3 variables pre-partido disponibles para Liga MX (posición dinámica, % de victorias,
+      diferencia de goles antes del partido), el PCA resume la estructura completa en muy pocos
+      componentes — la contracara de tener menos información disponible que en las ligas con datos
+      de evento.
+    </p>
+    <div class="pc-bars" style="margin-top:36px">
+      <div class="pc-bar-col">
+        <div class="pc-bar" style="height:100%"><span class="pct">80.5%</span></div>
+        <div class="lbl">PC1</div><div class="cum">acum. 80.5%</div>
+      </div>
+      <div class="pc-bar-col">
+        <div class="pc-bar" style="height:18%"><span class="pct">14.4%</span></div>
+        <div class="lbl">PC2</div><div class="cum">acum. 94.9%</div>
+      </div>
+      <div class="pc-bar-col">
+        <div class="pc-bar" style="height:6%"><span class="pct">5.1%</span></div>
+        <div class="lbl">PC3</div><div class="cum">acum. 100%</div>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:32px">
+      <span class="k">Cómo leer PC1 (80.5% de toda la varianza)</span>
+      <div class="load-chart" style="margin-top:14px">
+        <div class="load-row">
+          <span class="label">Posición en tabla</span>
+          <div class="load-track"><div class="zero"></div><div class="fill pos" style="width:30.5%"></div><span class="fv" style="left:52%">+0.61</span></div>
+        </div>
+        <div class="load-row">
+          <span class="label">Diferencia de goles</span>
+          <div class="load-track"><div class="zero"></div><div class="fill neg" style="width:28.5%"></div><span class="fv" style="right:52%;text-align:right">&minus;0.57</span></div>
+        </div>
+        <div class="load-row">
+          <span class="label">% de victorias</span>
+          <div class="load-track"><div class="zero"></div><div class="fill neg" style="width:27.4%"></div><span class="fv" style="right:52%;text-align:right">&minus;0.55</span></div>
+        </div>
+      </div>
+      <p style="margin-top:22px">
+        PC1 es, en esencia, un único eje de <strong>"qué tan mal parado está el equipo"</strong>:
+        sube con la posición en la tabla (peor lugar = número más alto) y baja con la diferencia de
+        goles y el % de victorias. Un solo número resume casi todo lo que hay que saber del estado
+        de forma de un equipo en este dataset.
+      </p>
+    </div>
+  </section>
+
+  <section id="estilos">
+    <div class="section-head">
+      <span class="num">05</span>
+      <div><span class="kicker">Agrupamiento no supervisado</span><h2>Cuatro estilos, ordenados por tabla</h2></div>
+    </div>
+    <p>
+      k-means (k=4) agrupó las 9,090 observaciones equipo-partido por parecido estadístico. Sin
+      información de posición táctica ni de qué equipo es, los 4 grupos resultantes se ordenan casi
+      perfectamente por posición en la tabla — una validación indirecta de que el ranking dinámico
+      está midiendo lo que dice medir.
+    </p>
+    <div class="clusters" style="margin-top:28px">
+      <div class="cluster-card">
+        <span class="tier">20.7% de los partidos</span>
+        <h4>Líderes</h4>
+        <div class="n">win% +1.39 · posición &minus;1.34 · dif. goles +1.24</div>
+        <div class="wdl-bar"><div class="wdl-w" style="width:43.4%"></div><div class="wdl-d" style="width:26.7%"></div><div class="wdl-l" style="width:29.9%"></div></div>
+        <p style="font-size:12.5px;color:var(--ink-muted);margin-top:8px">43.4% de victorias — el único grupo donde ganar es más frecuente que perder por buen margen.</p>
+      </div>
+      <div class="cluster-card">
+        <span class="tier">31.4% de los partidos</span>
+        <h4>Zona alta</h4>
+        <div class="n">win% +0.24 · posición &minus;0.43 · dif. goles +0.25</div>
+        <div class="wdl-bar"><div class="wdl-w" style="width:36.3%"></div><div class="wdl-d" style="width:29.0%"></div><div class="wdl-l" style="width:34.7%"></div></div>
+        <p style="font-size:12.5px;color:var(--ink-muted);margin-top:8px">El grupo más grande y el más parejo entre ganar, empatar y perder.</p>
+      </div>
+      <div class="cluster-card">
+        <span class="tier">32.6% de los partidos</span>
+        <h4>Zona media-baja</h4>
+        <div class="n">win% &minus;0.75 · posición +0.65 · dif. goles &minus;0.31</div>
+        <div class="wdl-bar"><div class="wdl-w" style="width:35.5%"></div><div class="wdl-d" style="width:26.6%"></div><div class="wdl-l" style="width:37.9%"></div></div>
+        <p style="font-size:12.5px;color:var(--ink-muted);margin-top:8px">Empieza a inclinarse hacia perder más que ganar, aunque todavía cerca.</p>
+      </div>
+      <div class="cluster-card">
+        <span class="tier">15.4% de los partidos</span>
+        <h4>Fondo de tabla</h4>
+        <div class="n">win% &minus;0.76 · posición +1.28 · dif. goles &minus;1.53</div>
+        <div class="wdl-bar"><div class="wdl-w" style="width:28.6%"></div><div class="wdl-d" style="width:26.6%"></div><div class="wdl-l" style="width:44.8%"></div></div>
+        <p style="font-size:12.5px;color:var(--ink-muted);margin-top:8px">44.8% de derrotas — casi el doble que el grupo de líderes.</p>
+      </div>
+    </div>
+    <p style="margin-top:22px;font-size:13.5px;color:var(--ink-muted)">
+      Nota: las etiquetas ("Líderes", "Zona alta"…) son una interpretación legible de los 4 grupos
+      que arrojó el algoritmo, no categorías impuestas de antemano. Un dato que se repite en los 4
+      grupos: la tasa de empate se mantiene entre 26.6% y 29.0% en todos ellos — empatar en Liga MX
+      no depende mucho de qué tan bien esté un equipo en la tabla.
+    </p>
+  </section>
+
+  <section id="prediccion">
+    <div class="section-head">
+      <span class="num">06</span>
+      <div><span class="kicker">Modelo supervisado</span><h2>Predicción de resultados</h2></div>
+    </div>
+    <p>
+      Un Random Forest sobre componentes principales predice Local / Empate / Visita usando solo
+      información previa al partido. Se evaluó con separación temporal estricta —walk-forward: cada
+      torneo se predice usando exclusivamente los torneos anteriores como entrenamiento— y se acumularon
+      los resultados de 28 torneos de prueba (4,239 partidos) para tener una lectura estadísticamente sólida.
+    </p>
+
+    <div class="callout gold" style="margin-top:24px">
+      <span class="k">La comparación que importa: contra la línea base ingenua</span>
+      <p>
+        Si el modelo simplemente predijera <strong>"siempre gana el local"</strong> en cada partido
+        (la clase más frecuente, 43.9% de las veces), acertaría más veces en bruto que cualquiera de
+        los dos modelos entrenados. Pero esa línea base tiene una exactitud balanceada de apenas
+        33.3% — nunca acierta un empate ni una victoria visitante. Ambos modelos entrenados la
+        superan en exactitud balanceada, y el jerárquico casi <strong>duplica</strong> su capacidad de
+        detectar empates reales frente al modelo conjunto.
+      </p>
+    </div>
+
+    <div class="model-compare" style="margin-top:28px">
+      <div class="model-card">
+        <span class="tag">Línea base</span>
+        <div class="name">Siempre "gana el local"</div>
+        <div class="big">43.9%</div>
+        <div class="sub">exactitud simple</div>
+        <ul>
+          <li><span>Exactitud balanceada</span><span>33.3%</span></li>
+          <li><span>Recall de empate</span><span>0.0%</span></li>
+          <li><span>Recall de visita</span><span>0.0%</span></li>
+        </ul>
+      </div>
+      <div class="model-card">
+        <span class="tag">Modelo conjunto</span>
+        <div class="name">3 clases a la vez</div>
+        <div class="big">38.2%</div>
+        <div class="sub">exactitud simple</div>
+        <ul>
+          <li><span>Exactitud balanceada</span><span>36.1%</span></li>
+          <li><span>Recall de empate</span><span>27.6%</span></li>
+          <li><span>Log-loss</span><span>1.123</span></li>
+        </ul>
+      </div>
+      <div class="model-card highlight">
+        <span class="tag">Modelo jerárquico</span>
+        <div class="name">Empate primero, luego local/visita</div>
+        <div class="big">34.7%</div>
+        <div class="sub">exactitud simple</div>
+        <ul>
+          <li><span>Exactitud balanceada</span><span>35.1%</span></li>
+          <li><span>Recall de empate</span><span>55.2%</span></li>
+          <li><span>Log-loss</span><span>1.153</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="table-wrap" style="margin-top:28px">
+      <table>
+        <thead>
+          <tr><th>Resultado</th><th class="num">n real</th><th class="num">Precisión (conjunto)</th><th class="num">Recall (conjunto)</th><th class="num">Precisión (jerárquico)</th><th class="num">Recall (jerárquico)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="badge H">Local</span></td><td class="num">1,863</td><td class="num">47.1%</td><td class="num">49.0%</td><td class="num">48.0%</td><td class="num">34.4%</td></tr>
+          <tr><td><span class="badge D">Empate</span></td><td class="num">1,159</td><td class="num">28.0%</td><td class="num">27.6%</td><td class="num">28.0%</td><td class="num">55.2%</td></tr>
+          <tr><td><span class="badge A">Visita</span></td><td class="num">1,217</td><td class="num">33.3%</td><td class="num">31.7%</td><td class="num">31.1%</td><td class="num">15.8%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:13.5px;color:var(--ink-muted);margin-top:12px">
+      El trade-off queda claro fila por fila: el jerárquico casi duplica el recall de empates a costa
+      de perder mucho recall en victorias visitantes. Cuál preferir depende de qué error te sale más
+      caro — el dashboard deja elegir el modelo por competencia en lugar de forzar uno solo.
+    </p>
+
+    <h4 style="margin-top:40px;font-size:1.05rem">Ejemplo real — Pumas UNAM en el Clausura 2025</h4>
+    <p style="font-size:13.5px;color:var(--ink-muted)">Modelo jerárquico, entrenado con las 29 temporadas anteriores (4,392 partidos). Los 17 partidos de Pumas en el torneo, ordenados por confianza del modelo.</p>
+    <div class="table-wrap" style="margin-top:14px">
+      <table>
+        <thead>
+          <tr><th>Fecha</th><th>Partido</th><th class="num">Marcador</th><th>Real</th><th>Predicción</th><th>Confianza</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="mono">2025-04-16</td><td>Pumas UNAM&nbsp;vs&nbsp;Santos Laguna</td><td class="num mono">2&ndash;0</td><td><span class="badge H">Local</span></td><td><span class="badge H">Local</span></td><td><span class="conf-bar"><span class="conf-fill" style="width:70%"></span></span>70.3%</td></tr>
+          <tr><td class="mono">2025-01-26</td><td>Pumas UNAM&nbsp;vs&nbsp;Atlas Gdl.</td><td class="num mono">0&ndash;0</td><td><span class="badge D">Empate</span></td><td><span class="badge D">Empate</span></td><td><span class="conf-bar"><span class="conf-fill" style="width:61%"></span></span>61.3%</td></tr>
+          <tr><td class="mono">2025-01-29</td><td>Pumas UNAM&nbsp;vs&nbsp;Dep. Toluca</td><td class="num mono">1&ndash;1</td><td><span class="badge D">Empate</span></td><td><span class="badge D">Empate</span></td><td><span class="conf-bar"><span class="conf-fill" style="width:56%"></span></span>56.0%</td></tr>
+          <tr><td class="mono">2025-04-12</td><td>Pumas UNAM&nbsp;vs&nbsp;FC Juárez</td><td class="num mono">0&ndash;0</td><td><span class="badge D">Empate</span></td><td><span class="badge D">Empate</span></td><td><span class="conf-bar"><span class="conf-fill" style="width:53%"></span></span>53.0%</td></tr>
+          <tr><td class="mono">2025-02-02</td><td>Atl. San Luis&nbsp;vs&nbsp;Pumas UNAM</td><td class="num mono">2&ndash;3</td><td><span class="badge A">Visita</span></td><td><span class="badge D">Empate</span></td><td><span class="conf-bar"><span class="conf-fill" style="width:56%"></span></span>55.7%</td></tr>
+          <tr><td class="mono">2025-04-05</td><td>Cruz Azul&nbsp;vs&nbsp;Pumas UNAM</td><td class="num mono">3&ndash;2</td><td><span class="badge H">Local</span></td><td><span class="badge H">Local</span></td><td><span class="conf-bar"><span class="conf-fill" style="width:50%"></span></span>50.4%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:13.5px;color:var(--ink-muted);margin-top:12px">
+      Pumas terminó el torneo con 7 aciertos de 17 partidos jugados. Las primeras cuatro filas muestran
+      al modelo funcionando bien —incluyendo tres empates correctos, la clase más difícil—; la quinta es
+      el error típico del ranking dinámico: Pumas gana 3&ndash;2 de visitante en San Luis y el modelo,
+      sin datos de plantilla ni de mercado, solo le da 55.7% de confianza… a un empate.
+    </p>
+  </section>
+
+  <section id="limitaciones">
+    <div class="section-head">
+      <span class="num">07</span>
+      <div><span class="kicker">Lectura crítica</span><h2>Limitaciones y próximos pasos</h2></div>
+    </div>
+    <ol class="steps">
+      <li><span class="idx">01</span><span><strong>Sin datos de evento.</strong> openfootball no trae tiros, posesión ni pases — las mismas variables que en La Liga o Bundesliga suben la exactitud a ~58%. Cerrar esta brecha requeriría una fuente paga (API-Football / Sportmonks) con cobertura de estadísticas por partido para Liga MX.</span></li>
+      <li><span class="idx">02</span><span><strong>Forma reciente limitada a goles.</strong> El promedio móvil de forma solo puede usar goles a favor/en contra; en las ligas con eventos también incorpora xG, tiros y progresión de balón.</span></li>
+      <li><span class="idx">03</span><span><strong>Liguillas excluidas.</strong> El formato de eliminación directa post-fase-regular queda fuera del ranking dinámico y del modelo — sería un proyecto aparte con su propia lógica de bracket.</span></li>
+      <li><span class="idx">04</span><span><strong>"Fortaleza histórica" no es una tabla oficial.</strong> El ranking de equipos de la sección 3 es un promedio del ranking dinámico a través de 15 años y 30 torneos, no una clasificación acumulada real.</span></li>
+      <li><span class="idx">05</span><span><strong>Siguiente paso natural.</strong> Si se consigue una fuente con estadísticas de partido para Liga MX, el mismo pipeline (rolling form + PCA + modelo jerárquico) se reutiliza sin cambios de arquitectura — solo se enriquece el set de variables de entrada.</span></li>
+    </ol>
+  </section>
+
+</main>
+
+<footer>
+  <p>
+    Radiografía de Liga MX — generado a partir de la base estandarizada del proyecto de análisis de
+    rendimiento en fútbol. Datos de resultados: openfootball (dominio público, github.com/openfootball/world).
+    Metodología de ranking dinámico, PCA, k-means y modelo de predicción: adaptación de la metodología
+    de análisis de estilos de juego aplicada originalmente en basquetball.
+  </p>
+</footer>
