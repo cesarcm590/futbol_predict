@@ -145,7 +145,7 @@ TEAM_ID_COLS = ["team", "opponent", "match_date", "result", "is_home", "competit
 
 TEAM_FEATURE_COLS = [
     "passes_attempted", "passes_completed", "pass_pct", "possession_pct",
-    "progressive_passes", "progressive_carries", "shots", "xg_total",
+    "progressive_passes", "progressive_carries", "shots", "xg_total", "corners",
     "tackles_won", "interceptions", "pressures", "fouls_committed", "touches",
     "win_pct_dynamic", "rank_dynamic", "goal_diff_before",
 ]

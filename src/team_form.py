@@ -12,7 +12,7 @@ import pandas as pd
 ROLLING_STAT_COLS = [
     "goals_for", "goals_against", "xg_total", "shots", "possession_pct",
     "passes_completed", "pass_pct", "progressive_passes", "progressive_carries",
-    "tackles_won", "interceptions", "pressures",
+    "tackles_won", "interceptions", "pressures", "corners",
 ]
 
 DYNAMIC_COLS = ["win_pct_dynamic", "rank_dynamic", "points_before", "goal_diff_before", "games_before"]
@@ -32,6 +32,10 @@ def add_rolling_form(team_perspective: pd.DataFrame, window: int = 5) -> pd.Data
 
     if "opp_xg_total" in df.columns:
         df["form_opp_xg_against"] = df.groupby("team")["opp_xg_total"].transform(
+            lambda s: s.shift(1).rolling(window, min_periods=1).mean()
+        )
+    if "opp_corners" in df.columns:
+        df["form_opp_corners_against"] = df.groupby("team")["opp_corners"].transform(
             lambda s: s.shift(1).rolling(window, min_periods=1).mean()
         )
     return df
@@ -57,12 +61,21 @@ def build_prediction_dataset(team_perspective_with_form: pd.DataFrame) -> pd.Dat
     home_feat = home[["match_id"] + feat_cols].rename(columns={c: f"home_{c}" for c in feat_cols})
     away_feat = away[["match_id"] + feat_cols].rename(columns={c: f"away_{c}" for c in feat_cols})
 
-    meta = home[shared + ["team", "opponent", "goals_for", "goals_against"]].rename(columns={
+    meta_cols = ["team", "opponent", "goals_for", "goals_against"]
+    home_corners = None
+    if "corners" in home.columns and "corners" in away.columns:
+        home_corners = home[["match_id", "corners"]].rename(columns={"corners": "home_corners"})
+        away_corners = away[["match_id", "corners"]].rename(columns={"corners": "away_corners"})
+
+    meta = home[shared + meta_cols].rename(columns={
         "team": "home_team", "opponent": "away_team", "goals_for": "home_score", "goals_against": "away_score",
     })
 
     out = meta.merge(home_feat, on="match_id").merge(away_feat, on="match_id")
     out["total_goals"] = out["home_score"] + out["away_score"]
+    if home_corners is not None:
+        out = out.merge(home_corners, on="match_id").merge(away_corners, on="match_id")
+        out["total_corners"] = out["home_corners"] + out["away_corners"]
     out["result"] = np.select(
         [out["home_score"] > out["away_score"], out["home_score"] == out["away_score"]],
         ["H", "D"], default="A",

@@ -46,6 +46,8 @@ def _team_match_stats(events: pd.DataFrame, team: str, directions: dict) -> dict
     tackles = duels[duels["duel_type"] == "Tackle"]
     tackles_won = tackles["duel_outcome"].isin(["Won", "Success In Play", "Success Out"]).sum()
 
+    corners = int((passes["pass_type"] == "Corner").sum()) if "pass_type" in passes.columns else np.nan
+
     return {
         "passes_attempted": passes_attempted,
         "passes_completed": passes_completed,
@@ -61,6 +63,7 @@ def _team_match_stats(events: pd.DataFrame, team: str, directions: dict) -> dict
         "pressures": int((tdf["type"] == "Pressure").sum()),
         "fouls_committed": int((tdf["type"] == "Foul Committed").sum()),
         "touches": int(tdf["location"].notna().sum()),
+        "corners": corners,
     }
 
 
@@ -90,4 +93,8 @@ def build_team_match_row(events: pd.DataFrame, match_meta: dict) -> dict:
     row["total_goals"] = row["home_score"] + row["away_score"]
     row["goal_margin_home"] = row["home_score"] - row["away_score"]
     row["home_win"] = int(row["home_score"] > row["away_score"])
+    if pd.notna(row.get("home_corners")) and pd.notna(row.get("away_corners")):
+        row["total_corners"] = row["home_corners"] + row["away_corners"]
+    else:
+        row["total_corners"] = np.nan
     return row
