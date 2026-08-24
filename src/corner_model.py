@@ -42,7 +42,8 @@ def predict_corners(model: dict, df: pd.DataFrame, lines: list[float] | None = N
     tree_preds = np.stack([est.predict(X_pca) for est in model["reg"].estimators_], axis=1)  # (n_rows, n_trees)
     mean_pred = tree_preds.mean(axis=1)
 
-    keep = [c for c in ["match_id", "match_date", "home_team", "away_team", "home_corners", "away_corners", "total_corners"] if c in df.columns]
+    keep = [c for c in ["match_id", "match_date", "home_team", "away_team", "data_source",
+                         "actual_home_corners", "actual_away_corners", "total_corners"] if c in df.columns]
     out = df[keep].reset_index(drop=True).copy()
     out["corners_esperados"] = mean_pred
 

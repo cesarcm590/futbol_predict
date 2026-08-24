@@ -19,9 +19,11 @@ st.caption(
     "probabilidad de 'Over' para esa línea, sin entrenar un modelo aparte por cada una."
 )
 st.warning(
-    "Solo funciona en competiciones con datos de eventos de StatsBomb (no en Liga MX vía "
-    "openfootball, que solo trae resultados). Esto es un ejercicio analítico, no una "
-    "recomendación de apuesta."
+    "Solo funciona en competiciones con conteo de corners por partido (StatsBomb o "
+    "football-data.co.uk) — no en Liga MX vía openfootball, que solo trae resultados. Esto es "
+    "un ejercicio analítico, no una recomendación de apuesta. Con la muestra actual, en la "
+    "mayoría de las líneas el modelo queda prácticamente empatado con el baseline ingenuo — "
+    "no lo tomes como una señal fuerte."
 )
 
 
@@ -55,6 +57,12 @@ with st.sidebar:
     n_comp = st.slider("Componentes PCA", 2, 15, 8)
 
 scope = tp[tp["competition_name"] == comp_choice].copy()
+
+if "data_source" in scope.columns:
+    src_counts = (scope["data_source"].value_counts() / 2).round(0).astype(int)  # /2: cada partido son 2 filas (una por equipo)
+    src_txt = " · ".join(f"**{n:,}** partidos de *{s}*" for s, n in src_counts.items())
+    st.caption(f"Fuente de datos en este filtro: {src_txt}.")
+
 tp_form = add_rolling_form(scope, window=window)
 pred_data = build_prediction_dataset(tp_form)
 pred_data = pred_data.dropna(subset=["total_corners"]).copy()
@@ -62,9 +70,15 @@ pred_data = pred_data.dropna(subset=["total_corners"]).copy()
 if len(pred_data) < 30:
     st.warning(f"Muestra chica con corners disponibles ({len(pred_data)} partidos) — resultados poco confiables.")
 
-feature_cols = [c for c in prediction_feature_cols(pred_data) if "corner" in c or c in (
-    "rank_gap", "win_pct_gap", "form_goals_gap",
-) or c.replace("home_", "").replace("away_", "") in ("win_pct_dynamic", "rank_dynamic", "points_before", "goal_diff_before", "games_before")]
+SAFE_FEATURE_BASES = (
+    "win_pct_dynamic", "rank_dynamic", "points_before", "goal_diff_before", "games_before",
+    "form_corners", "form_opp_corners_against",
+)
+feature_cols = [
+    c for c in prediction_feature_cols(pred_data)
+    if c.replace("home_", "").replace("away_", "") in SAFE_FEATURE_BASES
+    or c in ("rank_gap", "win_pct_gap", "form_goals_gap")
+]
 feature_cols = [c for c in feature_cols if c in pred_data.columns]
 
 train, test, test_season = temporal_split(pred_data)
@@ -107,8 +121,9 @@ st.plotly_chart(fig, width='stretch')
 
 st.markdown("**Predicción por partido (temporada de prueba)**")
 line_choice = st.selectbox("Línea a mostrar", CORNER_LINES, index=1)
-show_cols = ["match_date", "home_team", "away_team", "home_corners", "away_corners", "total_corners",
+show_cols = ["match_date", "home_team", "away_team", "actual_home_corners", "actual_away_corners", "total_corners",
              "corners_esperados", f"p_over_{line_choice}", f"pick_{line_choice}", f"acierto_{line_choice}"]
+show_cols += [c for c in ["data_source"] if c in pred.columns]
 show = pred[show_cols].copy()
 show["corners_esperados"] = show["corners_esperados"].round(2)
 show[f"p_over_{line_choice}"] = (show[f"p_over_{line_choice}"] * 100).round(1)

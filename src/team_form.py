@@ -54,6 +54,7 @@ def build_prediction_dataset(team_perspective_with_form: pd.DataFrame) -> pd.Dat
     """
     feat_cols = prematch_feature_cols(team_perspective_with_form)
     shared = ["match_id", "competition_name", "season_name", "match_date"]
+    shared += [c for c in ["data_source"] if c in team_perspective_with_form.columns]
 
     home = team_perspective_with_form[team_perspective_with_form["is_home"] == 1]
     away = team_perspective_with_form[team_perspective_with_form["is_home"] == 0]
@@ -64,8 +65,12 @@ def build_prediction_dataset(team_perspective_with_form: pd.DataFrame) -> pd.Dat
     meta_cols = ["team", "opponent", "goals_for", "goals_against"]
     home_corners = None
     if "corners" in home.columns and "corners" in away.columns:
-        home_corners = home[["match_id", "corners"]].rename(columns={"corners": "home_corners"})
-        away_corners = away[["match_id", "corners"]].rename(columns={"corners": "away_corners"})
+        # OJO: "actual_" y no "home_"/"away_" a proposito -- prediction_feature_cols()
+        # y filtros similares recogen cualquier columna con esos prefijos como feature de
+        # entrada; estos son los corners REALES del propio partido (la respuesta que se
+        # quiere predecir), asi que un prefijo home_/away_ aqui seria fuga de datos.
+        home_corners = home[["match_id", "corners"]].rename(columns={"corners": "actual_home_corners"})
+        away_corners = away[["match_id", "corners"]].rename(columns={"corners": "actual_away_corners"})
 
     meta = home[shared + meta_cols].rename(columns={
         "team": "home_team", "opponent": "away_team", "goals_for": "home_score", "goals_against": "away_score",
@@ -75,7 +80,7 @@ def build_prediction_dataset(team_perspective_with_form: pd.DataFrame) -> pd.Dat
     out["total_goals"] = out["home_score"] + out["away_score"]
     if home_corners is not None:
         out = out.merge(home_corners, on="match_id").merge(away_corners, on="match_id")
-        out["total_corners"] = out["home_corners"] + out["away_corners"]
+        out["total_corners"] = out["actual_home_corners"] + out["actual_away_corners"]
     out["result"] = np.select(
         [out["home_score"] > out["away_score"], out["home_score"] == out["away_score"]],
         ["H", "D"], default="A",

@@ -64,6 +64,10 @@ with st.sidebar:
     ) == "Jerárquico (empate primero)"
 
 scope = tp[tp["competition_name"] == comp_choice]
+if "data_source" in scope.columns and not scope.empty:
+    src_counts = (scope["data_source"].value_counts() / 2).round(0).astype(int)
+    src_txt = " · ".join(f"**{n:,}** partidos de *{s}*" for s, n in src_counts.items())
+    st.caption(f"Fuente de datos: {src_txt}.")
 tp_form = add_rolling_form(scope, window=window)
 pred_data = build_prediction_dataset(tp_form)
 feature_cols = prediction_feature_cols(pred_data)

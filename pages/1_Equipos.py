@@ -53,6 +53,10 @@ if not team_choice:
     st.stop()
 
 st.caption(f"{len(scope)} observaciones equipo-partido en el filtro actual ({scope['team'].nunique()} equipos).")
+if "data_source" in scope.columns and not scope.empty:
+    src_counts = (scope["data_source"].value_counts() / 2).round(0).astype(int)
+    src_txt = " · ".join(f"**{n:,}** partidos de *{s}*" for s, n in src_counts.items())
+    st.caption(f"Fuente de datos: {src_txt}.")
 if len(scope) < 20:
     st.warning(
         "Muy pocos partidos en este filtro — StatsBomb Open Data no siempre libera la "

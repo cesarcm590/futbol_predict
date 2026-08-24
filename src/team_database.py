@@ -52,6 +52,42 @@ def sync_competition_season(competition_id: int, season_id: int) -> pd.DataFrame
         standings = compute_dynamic_standings(matches[["match_id", "match_date", "home_team", "away_team", "home_score", "away_score"]])
         team_rows = team_rows.merge(standings, on="match_id", how="left")
 
+    team_rows["data_source"] = "StatsBomb"
+    _append_to_db(team_rows)
+    return team_rows
+
+
+def sync_footballdata(division: str = "E0") -> pd.DataFrame:
+    """football-data.co.uk: resultados + tiros/corners/faltas por partido,
+    gratis desde 2000/01 -- se usa para sumar temporadas donde StatsBomb no
+    tiene datos liberados (mismo equipo, mas historia), sin duplicar
+    temporadas que ya existen via StatsBomb."""
+    from src.footballdata_loader import load_footballdata
+
+    rows = load_footballdata(division)
+    if rows.empty:
+        return rows
+
+    comp_name = rows["competition_name"].iloc[0]
+    existing = load_team_database()
+    already = set()
+    if not existing.empty:
+        already = set(existing[existing["competition_name"] == comp_name]["season_name"].unique())
+
+    rows = rows[~rows["season_name"].isin(already)].copy()
+    if rows.empty:
+        return rows
+
+    all_new = []
+    for season_name, season_matches in rows.groupby("season_name"):
+        standings = compute_dynamic_standings(
+            season_matches[["match_id", "match_date", "home_team", "away_team", "home_score", "away_score"]]
+        )
+        merged = season_matches.merge(standings, on="match_id", how="left")
+        all_new.append(merged)
+
+    team_rows = pd.concat(all_new, ignore_index=True)
+    team_rows["match_date"] = pd.to_datetime(team_rows["match_date"]).dt.strftime("%Y-%m-%d")
     _append_to_db(team_rows)
     return team_rows
 
@@ -90,17 +126,25 @@ def sync_ligamx() -> pd.DataFrame:
 
     team_rows = pd.concat(all_rows, ignore_index=True)
     team_rows["match_date"] = pd.to_datetime(team_rows["match_date"]).dt.strftime("%Y-%m-%d")
+    team_rows["data_source"] = "openfootball"
     _append_to_db(team_rows)
     return team_rows
 
 
 def load_team_database() -> pd.DataFrame:
-    if DB_PATH.exists():
-        return pd.read_parquet(DB_PATH)
-    return pd.DataFrame()
+    if not DB_PATH.exists():
+        return pd.DataFrame()
+    df = pd.read_parquet(DB_PATH)
+    if "data_source" not in df.columns:
+        df["data_source"] = pd.NA
+    unknown = df["data_source"].isna()
+    df.loc[unknown & (df["competition_id"] == 900001), "data_source"] = "openfootball"
+    df.loc[unknown & df["competition_id"].isin([900002]), "data_source"] = "manual (Wikipedia/ESPN)"
+    df.loc[unknown & ~df["competition_id"].isin([900001, 900002]), "data_source"] = "StatsBomb"
+    return df
 
 
-_SHARED_COLS = ["match_id", "competition_id", "season_id", "competition_name", "season_name", "match_date", "total_goals"]
+_SHARED_COLS = ["match_id", "competition_id", "season_id", "competition_name", "season_name", "match_date", "total_goals", "data_source"]
 
 
 def to_team_perspective(team_matches: pd.DataFrame) -> pd.DataFrame:
