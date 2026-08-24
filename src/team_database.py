@@ -134,6 +134,31 @@ def sync_ligamx() -> pd.DataFrame:
     return team_rows
 
 
+def sync_nba() -> pd.DataFrame:
+    """NBA via basketball-reference.com (box scores 'Team Totals' provistos
+    por el usuario, ver src/nba_loader.py) -- ya trae estadisticas ricas de
+    equipo por partido (FG%, ORtg, DRtg, etc.), a diferencia de las fuentes
+    de solo-resultados como openfootball."""
+    from src.nba_loader import load_nba_matches
+
+    matches = load_nba_matches()
+    if matches.empty:
+        return matches
+
+    all_rows = []
+    for season_name, season_matches in matches.groupby("season_name"):
+        standings = compute_dynamic_standings(
+            season_matches[["match_id", "match_date", "home_team", "away_team", "home_score", "away_score"]]
+        )
+        merged = season_matches.merge(standings, on="match_id", how="left")
+        all_rows.append(merged)
+
+    team_rows = pd.concat(all_rows, ignore_index=True)
+    team_rows["match_date"] = pd.to_datetime(team_rows["match_date"]).dt.strftime("%Y-%m-%d")
+    _append_to_db(team_rows)
+    return team_rows
+
+
 def load_team_database() -> pd.DataFrame:
     if not DB_PATH.exists():
         return pd.DataFrame()
@@ -194,6 +219,9 @@ TEAM_FEATURE_COLS = [
     "passes_attempted", "passes_completed", "pass_pct", "possession_pct",
     "progressive_passes", "progressive_carries", "shots", "xg_total", "corners",
     "tackles_won", "interceptions", "pressures", "fouls_committed", "touches",
+    # NBA (basketball-reference "Team Totals")
+    "fg_pct", "tp_pct", "ft_pct", "orb", "drb", "trb", "ast", "stl", "blk", "tov", "pf",
+    "ts_pct", "efg_pct", "tpar", "ftr", "ortg", "drtg", "usg_pct",
     "win_pct_dynamic", "rank_dynamic", "goal_diff_before",
 ]
 

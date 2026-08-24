@@ -13,6 +13,9 @@ ROLLING_STAT_COLS = [
     "goals_for", "goals_against", "xg_total", "shots", "possession_pct",
     "passes_completed", "pass_pct", "progressive_passes", "progressive_carries",
     "tackles_won", "interceptions", "pressures", "corners",
+    # NBA
+    "fg_pct", "tp_pct", "ft_pct", "orb", "drb", "trb", "ast", "stl", "blk", "tov", "pf",
+    "ts_pct", "efg_pct", "ortg", "drtg",
 ]
 
 DYNAMIC_COLS = ["win_pct_dynamic", "rank_dynamic", "points_before", "goal_diff_before", "games_before"]

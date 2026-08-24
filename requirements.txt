@@ -7,3 +7,5 @@ streamlit>=1.38
 matplotlib>=3.8
 pyarrow>=15.0
 plotly>=5.22
+watchdog>=4.0
+requests>=2.31

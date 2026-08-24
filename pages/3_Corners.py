@@ -3,10 +3,12 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from src.corner_model import CORNER_LINES, evaluate_corners, fit_corners_model, predict_corners
 from src.match_prediction import prediction_feature_cols, temporal_split
 from src.team_database import load_team_database, to_team_perspective
 from src.team_form import add_rolling_form, build_prediction_dataset
+from src.totals_model import evaluate_totals, fit_totals_model, predict_totals
+
+CORNER_LINES = [7.5, 8.5, 9.5, 10.5, 11.5, 12.5]
 
 st.set_page_config(page_title="Corners — Fútbol", layout="wide")
 
@@ -91,9 +93,9 @@ st.caption(
 if len(train) < 30 or len(test) < 10:
     st.warning(f"Muestra chica (train={len(train)}, test={len(test)}) — toma esto como exploratorio.")
 
-model = fit_corners_model(train, feature_cols, n_components=n_comp)
-pred = predict_corners(model, test)
-metrics = evaluate_corners(pred, train_mean_corners=train["total_corners"].mean())
+model = fit_totals_model(train, feature_cols, target_col="total_corners", n_components=n_comp)
+pred = predict_totals(model, test, lines=CORNER_LINES, extra_cols=["actual_home_corners", "actual_away_corners"])
+metrics = evaluate_totals(pred, target_col="total_corners", train_mean=train["total_corners"].mean(), lines=CORNER_LINES)
 
 col1, col2, col3 = st.columns(3)
 col1.metric("Error promedio (MAE)", f"{metrics['mae']:.2f} corners")
@@ -122,9 +124,9 @@ st.plotly_chart(fig, width='stretch')
 st.markdown("**Predicción por partido (temporada de prueba)**")
 line_choice = st.selectbox("Línea a mostrar", CORNER_LINES, index=1)
 show_cols = ["match_date", "home_team", "away_team", "actual_home_corners", "actual_away_corners", "total_corners",
-             "corners_esperados", f"p_over_{line_choice}", f"pick_{line_choice}", f"acierto_{line_choice}"]
+             "esperado", f"p_over_{line_choice}", f"pick_{line_choice}", f"acierto_{line_choice}"]
 show_cols += [c for c in ["data_source"] if c in pred.columns]
-show = pred[show_cols].copy()
+show = pred[show_cols].rename(columns={"esperado": "corners_esperados"}).copy()
 show["corners_esperados"] = show["corners_esperados"].round(2)
 show[f"p_over_{line_choice}"] = (show[f"p_over_{line_choice}"] * 100).round(1)
 show = show.sort_values(f"p_over_{line_choice}", ascending=False)

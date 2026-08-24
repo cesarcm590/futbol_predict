@@ -87,11 +87,20 @@ def predict_hierarchical(model: dict, df: pd.DataFrame) -> pd.DataFrame:
     X_std = model["scaler"].transform(X_raw)
     X_pca = model["pca"].transform(X_std)
 
+    # Si una clase nunca aparece en el train (p.ej. "empate" en deportes sin
+    # empate posible, como NBA), el clasificador solo conoce la otra clase --
+    # su probabilidad implicita es 0, no un index() que truena.
     draw_classes = list(model["draw_clf"].classes_)
-    p_draw = model["draw_clf"].predict_proba(X_pca)[:, draw_classes.index(1)]
+    if 1 in draw_classes:
+        p_draw = model["draw_clf"].predict_proba(X_pca)[:, draw_classes.index(1)]
+    else:
+        p_draw = np.zeros(len(X_pca))
 
     home_classes = list(model["home_clf"].classes_)
-    p_home_given_not_draw = model["home_clf"].predict_proba(X_pca)[:, home_classes.index(1)]
+    if 1 in home_classes:
+        p_home_given_not_draw = model["home_clf"].predict_proba(X_pca)[:, home_classes.index(1)]
+    else:
+        p_home_given_not_draw = np.zeros(len(X_pca))
 
     p_H = (1 - p_draw) * p_home_given_not_draw
     p_A = (1 - p_draw) * (1 - p_home_given_not_draw)
