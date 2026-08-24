@@ -57,6 +57,9 @@ def sync_competition_season(competition_id: int, season_id: int) -> pd.DataFrame
     return team_rows
 
 
+FOOTBALLDATA_DIVISIONS = ["E0", "SP1", "D1", "I1", "F1"]
+
+
 def sync_footballdata(division: str = "E0") -> pd.DataFrame:
     """football-data.co.uk: resultados + tiros/corners/faltas por partido,
     gratis desde 2000/01 -- se usa para sumar temporadas donde StatsBomb no
