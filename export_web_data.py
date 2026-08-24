@@ -28,7 +28,7 @@ OUT.mkdir(parents=True, exist_ok=True)
 
 EXPLORE_COMPS = [
     "Liga MX", "La Liga", "FA Women's Super League", "Ligue 1",
-    "Premier League", "Serie A", "NWSL", "1. Bundesliga",
+    "Premier League", "Serie A", "NWSL", "1. Bundesliga", "NBA",
 ]
 
 

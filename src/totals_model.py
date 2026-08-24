@@ -45,6 +45,14 @@ def predict_totals(model: dict, df: pd.DataFrame, lines: list[float], extra_cols
     keep = [c for c in (["match_id", "match_date", "home_team", "away_team", "data_source", target_col] + (extra_cols or [])) if c in df.columns]
     out = df[keep].reset_index(drop=True).copy()
     out["esperado"] = mean_pred
+    # rango esperado a partir de la distribucion empirica del bosque (percentiles
+    # de las predicciones de cada arbol) -- no un intervalo estadistico formal,
+    # pero mucho mas informativo que un solo numero cuando lo que importa es el
+    # rango probable, no acertarle al promedio exacto.
+    out["p10"] = np.percentile(tree_preds, 10, axis=1)
+    out["p25"] = np.percentile(tree_preds, 25, axis=1)
+    out["p75"] = np.percentile(tree_preds, 75, axis=1)
+    out["p90"] = np.percentile(tree_preds, 90, axis=1)
 
     for line in lines:
         p_over = (tree_preds > line).mean(axis=1)
