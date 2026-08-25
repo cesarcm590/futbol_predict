@@ -3,7 +3,7 @@ const fmtPct = (x) => (x == null ? "—" : `${x.toFixed(1)}%`);
 const fmtDate = (d) => d || "—";
 
 async function getJSON(name) {
-  const res = await fetch(DATA + name, { cache: "force-cache" });
+  const res = await fetch(DATA + name, { cache: "no-cache" });
   if (!res.ok) throw new Error(`No se pudo cargar ${name}`);
   return res.json();
 }
